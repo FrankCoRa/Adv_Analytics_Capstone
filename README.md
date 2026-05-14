@@ -1,4 +1,118 @@
+# Advanced Analytics Capstone  
+## Course Demand Forecasting for Academic Scheduling
+
+This project focuses on developing predictive analytics and machine learning models to forecast course enrollment demand for the Registrar’s Office at Mercy University.
+
+Using historical academic scheduling data, the project aims to improve:
+
+- Academic scheduling efficiency
+- Classroom utilization
+- Enrollment forecasting accuracy
+- Strategic resource allocation
+- Operational decision-making across Spring, Summer, and Fall terms
+
+The project combines data analytics, feature engineering, machine learning, and scheduling optimization techniques to support data-driven academic planning.
+
 ---
+
+# Project Objectives
+
+The primary objectives of this project are to:
+
+- Forecast course-level enrollment demand
+- Improve room assignment decision-making
+- Reduce underutilized and over-capacity classrooms
+- Minimize last-minute scheduling changes
+- Support strategic scheduling and institutional planning
+
+---
+
+# Business Problem
+
+Uncertain student enrollment patterns often result in:
+
+- Inefficient room assignments
+- Underutilized classrooms
+- Over-capacity classrooms
+- Scheduling conflicts
+- Increased administrative workload
+- Reduced operational efficiency
+
+These challenges directly impact both institutional operations and student experience.
+
+---
+
+# Project Goal
+
+Develop a predictive scheduling system capable of forecasting course enrollment demand while considering operational scheduling constraints such as:
+
+- Campus location
+- Room availability
+- Capacity limitations
+- Instructional methodologies
+- Cross-listed sections
+- Historical enrollment behavior
+
+---
+
+# Deliverables
+
+The project includes the following deliverables:
+
+- Executive summary for stakeholders
+- Technical report with methodology and findings
+- Predictive model evaluation and interpretation
+- Data visualizations and trend analysis
+- Ethical and data governance considerations
+- Documentation of tools, workflows, and processes used
+
+---
+
+# PACE Framework
+
+This project follows Google's PACE framework:
+
+| Stage | Description |
+|---|---|
+| **Plan** | Define the business problem, project goals, stakeholders, and success metrics |
+| **Analyze** | Perform exploratory data analysis, feature engineering, and statistical analysis |
+| **Construct** | Build and evaluate predictive machine learning models |
+| **Execute** | Present findings, visualizations, recommendations, and deployment considerations |
+
+---
+
+# PACE: Plan
+
+## Initial Data Exploration
+
+Initial observations from the exploratory data analysis include:
+
+- The dataset contains detailed scheduling and enrollment information across multiple academic terms.
+- Key variables include campus, CRN, instructional methodology, cross-listed groups, meeting days/times, room assignments, enrollment counts, and maximum room capacities.
+- Some rooms are heavily utilized while others remain underutilized during specific terms.
+- Enrollment demand varies significantly across courses and instructional methods.
+- Multiple instructional delivery methods are represented, including in-person, hybrid, and distance learning formats.
+- Historical enrollment trends suggest recurring seasonal demand patterns across terms.
+
+---
+
+# Dataset Characteristics
+
+The dataset includes scheduling and enrollment-related attributes such as:
+
+- Course identifiers
+- Section information
+- Campus locations
+- Meeting days and times
+- Room assignments
+- Instructional methodologies
+- Cross-listed course groups
+- Enrollment counts
+- Maximum enrollment capacities
+- Historical scheduling behavior
+
+---
+
 # Feature Engineering
 
 To improve predictive performance and capture scheduling behavior patterns, several engineered variables were created from the original Registrar dataset.
@@ -31,6 +145,7 @@ These features help the model better understand enrollment trends, instructional
 The historical variables shown above were generated through grouping and aggregation processes to provide stronger predictive signals for the target variable: **student enrollment (`SECTENROLL`)**.
 
 These engineered features allow the model to capture:
+
 - Historical enrollment behavior
 - Seasonal demand patterns
 - Instructional methodology trends
@@ -87,6 +202,7 @@ During the Analyze phase, exploratory data analysis and feature engineering were
 - Feature engineering and selection
 
 Several visualizations were developed to identify:
+
 - Enrollment trends across terms
 - Instructional methodology behavior
 - Room utilization efficiency
@@ -148,6 +264,30 @@ The following evaluation metrics were used to assess model performance:
 ## Development Environment
 
 - Jupyter Notebook
+
+---
+
+# Ethical Considerations
+
+This project considers ethical and operational concerns including:
+
+- Data privacy and governance
+- Fair resource allocation
+- Transparency in predictive modeling
+- Bias reduction in scheduling recommendations
+- Responsible use of institutional data
+
+---
+
+# Expected Impact
+
+The proposed predictive scheduling system aims to:
+
+- Improve classroom utilization
+- Increase forecasting accuracy
+- Reduce scheduling conflicts
+- Enhance institutional planning
+- Support data-driven decision-making within the Registrar’s Office
 
 ---
 
