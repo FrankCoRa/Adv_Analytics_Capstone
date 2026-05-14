@@ -1,5 +1,4 @@
 ---
-
 # Feature Engineering
 
 To improve predictive performance and capture scheduling behavior patterns, several engineered variables were created from the original Registrar dataset.
