@@ -1,258 +1,474 @@
 # Advanced Analytics Capstone  
-## Course Demand Forecasting for Academic Scheduling
+# Course Demand Forecasting for Academic Scheduling
 
-This project focuses on developing predictive analytics and machine learning models to forecast course enrollment demand for the Registrar’s Office at Mercy University.
+A machine learning project focused on forecasting **section-level course enrollment demand** using historical academic scheduling data from the Registrar’s Office at Mercy University.
 
-Using historical academic scheduling data, the project aims to improve:
-
-- Academic scheduling efficiency
-- Classroom utilization
-- Enrollment forecasting accuracy
-- Strategic resource allocation
-- Operational decision-making across Spring, Summer, and Fall terms
-
-The project combines data analytics, feature engineering, machine learning, and scheduling optimization techniques to support data-driven academic planning.
+The project applies predictive analytics, feature engineering, and seasonal machine learning models to support proactive academic planning, enrollment forecasting, and data-driven Registrar operations.
 
 ---
 
-# Project Objectives
+# Project Overview
 
-The primary objectives of this project are to:
+Academic scheduling requires institutions to make operational decisions before final enrollment demand is known. Variability in student enrollment patterns can create challenges for:
 
-- Forecast course-level enrollment demand
-- Improve room assignment decision-making
-- Reduce underutilized and over-capacity classrooms
-- Minimize last-minute scheduling changes
-- Support strategic scheduling and institutional planning
+- Section planning
+- Course demand estimation
+- Modality balancing
+- Academic resource allocation
+- Long-term scheduling strategy
+
+This project develops a predictive enrollment forecasting workflow capable of estimating future section demand across:
+
+- Spring
+- Summer
+- Fall
+
+using historical Registrar scheduling data.
 
 ---
 
 # Business Problem
 
-Uncertain student enrollment patterns often result in:
+Registrar offices often experience uncertainty around future course demand before student registration is finalized.
 
-- Inefficient room assignments
-- Underutilized classrooms
-- Over-capacity classrooms
-- Scheduling conflicts
+This can lead to:
+
+- Overfilled sections
+- Underutilized course offerings
+- Last-minute scheduling adjustments
 - Increased administrative workload
-- Reduced operational efficiency
+- Reactive planning decisions
+- Difficulty identifying high-demand courses early
 
-These challenges directly impact both institutional operations and student experience.
+The objective of this project is to help academic scheduling teams anticipate section demand earlier through predictive analytics.
 
 ---
 
-# Project Goal
+# Project Goals
 
-Develop a predictive scheduling system capable of forecasting course enrollment demand while considering operational scheduling constraints such as:
+The project focuses on:
 
-- Campus location
-- Room availability
-- Capacity limitations
-- Instructional methodologies
-- Cross-listed sections
-- Historical enrollment behavior
+- Forecasting section-level enrollment demand
+- Identifying seasonal enrollment trends
+- Understanding modality-based enrollment behavior
+- Supporting proactive academic scheduling decisions
+- Improving data-driven planning within Registrar operations
+- Providing interpretable forecasting insights for stakeholders
+
+---
+
+# Project Objectives
+
+The primary objectives include:
+
+- Predict future section enrollment
+- Analyze historical enrollment patterns
+- Understand demand behavior across academic terms
+- Evaluate modality-based demand trends
+- Improve operational visibility before registration periods
+- Support institutional planning through predictive analytics
 
 ---
 
 # Deliverables
 
-The project includes the following deliverables:
+The project includes:
 
 - Executive summary for stakeholders
 - Technical report with methodology and findings
-- Predictive model evaluation and interpretation
-- Data visualizations and trend analysis
-- Ethical and data governance considerations
-- Documentation of tools, workflows, and processes used
+- Predictive model evaluation
+- Enrollment trend visualizations
+- Feature engineering documentation
+- Ethical and governance considerations
+- Forecasting workflow documentation
 
 ---
 
 # PACE Framework
 
-This project follows Google's PACE framework:
+This project follows Google's PACE Framework:
 
 | Stage | Description |
 |---|---|
-| **Plan** | Define the business problem, project goals, stakeholders, and success metrics |
-| **Analyze** | Perform exploratory data analysis, feature engineering, and statistical analysis |
-| **Construct** | Build and evaluate predictive machine learning models |
-| **Execute** | Present findings, visualizations, recommendations, and deployment considerations |
+| **Plan** | Define business problem, stakeholders, objectives, and success metrics |
+| **Analyze** | Perform exploratory data analysis and feature engineering |
+| **Construct** | Build and validate machine learning forecasting models |
+| **Execute** | Evaluate results, communicate insights, and identify operational impact |
 
 ---
 
-# PACE: Plan
+# 🟨 PACE: Plan
 
 ## Initial Data Exploration
 
-Initial observations from the exploratory data analysis include:
+Initial analysis identified several important scheduling and enrollment behaviors:
 
-- The dataset contains detailed scheduling and enrollment information across multiple academic terms.
-- Key variables include campus, CRN, instructional methodology, cross-listed groups, meeting days/times, room assignments, enrollment counts, and maximum room capacities.
-- Some rooms are heavily utilized while others remain underutilized during specific terms.
-- Enrollment demand varies significantly across courses and instructional methods.
-- Multiple instructional delivery methods are represented, including in-person, hybrid, and distance learning formats.
-- Historical enrollment trends suggest recurring seasonal demand patterns across terms.
+- Enrollment demand varies significantly by:
+  - term
+  - modality
+  - course
+  - school
+  - campus
+
+- Historical enrollment patterns show recurring seasonal behavior across:
+  - Spring
+  - Summer
+  - Fall
+
+- In-person (`TD`) sections consistently demonstrate stronger enrollment demand during primary academic terms.
+
+- Some sections repeatedly operate near or above enrollment capacity, indicating recurring demand pressure.
 
 ---
 
 # Dataset Characteristics
 
-The dataset includes scheduling and enrollment-related attributes such as:
+The dataset contains academic scheduling and enrollment data including:
 
 - Course identifiers
 - Section information
 - Campus locations
+- Instructional modalities
 - Meeting days and times
-- Room assignments
-- Instructional methodologies
-- Cross-listed course groups
 - Enrollment counts
-- Maximum enrollment capacities
+- Maximum enrollment capacity
 - Historical scheduling behavior
+- Cross-listed course information
 
 ---
 
 # Feature Engineering
 
-To improve predictive performance and capture scheduling behavior patterns, several engineered variables were created from the original Registrar dataset.
-
-These features help the model better understand enrollment trends, instructional methodologies, scheduling intensity, and historical course behavior.
-
-## Feature Definitions
+Several engineered variables were created to improve forecasting accuracy and capture enrollment behavior patterns.
 
 | Variable | Description |
 |---|---|
-| `COURSE_CODE` | Unique course identifier created by concatenating the `SUBJECT` and `CRSNUMBER` fields. |
-| `SECTION_LABEL` | Label or identifier assigned to a specific course section. |
-| `SECTION_SEQ` | Sequential counter representing the order of sections within the same `TERM`, `COURSE_CODE`, and `INST_METHOD_GROUPED`. |
-| `INST_METHOD_GROUPED` | Instructional delivery method grouped into broader categories, where all distance learning modalities are consolidated as `DL`. |
-| `CAMPUS` | Campus location where the course is offered. |
-| `PARTTERM` | Academic part-of-term designation associated with the course offering. |
-| `MTGDAYS` | Scheduled meeting days represented using weekday letter codes (`U`, `M`, `T`, `W`, `R`, `F`, `S`). |
-| `MTGTIME` | Scheduled meeting time range for the course section. |
-| `TIME_BLOCK` | Generalized meeting time category derived from `MTGTIME` (e.g., Morning, Afternoon, Evening). |
-| `NUM_MEETING_DAYS` | Total number of scheduled meeting days per week based on the `MTGDAYS` field. |
-| `MAXENROLL` | Maximum enrollment capacity established by the academic department for the course section. |
-| `XLST_FLAG` | Binary indicator identifying whether the course section belongs to a cross-listed group. |
-| `hist_avg_enroll` | Historical average enrollment for the same `COURSE_CODE` and `INST_METHOD_GROUPED`. |
-| `hist_std_enroll` | Historical standard deviation of enrollment values for the same `COURSE_CODE` and `INST_METHOD_GROUPED`. |
-| `hist_max_enroll` | Highest historical enrollment recorded for the same `COURSE_CODE` and `INST_METHOD_GROUPED`. |
-| `hist_section_count` | Total number of historical sections (`CRN`) offered for the same `COURSE_CODE` and `INST_METHOD_GROUPED`. |
-| `last_hist_enroll` | Enrollment value from the most recent historical offering of the same `COURSE_CODE` and `INST_METHOD_GROUPED`. |
-| `last_same_term_enroll` | Enrollment value from the most recent historical offering within the same seasonal term for the same `COURSE_CODE` and `INST_METHOD_GROUPED`. |
+| `COURSE_CODE` | Combined `SUBJECT + CRSNUMBER` identifier |
+| `SECTION_SEQ` | Sequential section count |
+| `INST_METHOD_GROUPED` | Grouped instructional modality |
+| `TIME_BLOCK` | Morning / Afternoon / Evening |
+| `NUM_MEETING_DAYS` | Number of weekly meeting days |
+| `XLST_FLAG` | Cross-listed section indicator |
+| `hist_avg_enroll` | Historical average enrollment |
+| `hist_std_enroll` | Historical enrollment variability |
+| `hist_max_enroll` | Historical peak enrollment |
+| `hist_section_count` | Historical offering frequency |
+| `last_hist_enroll` | Most recent historical enrollment |
+| `last_same_term_enroll` | Most recent same-season enrollment |
 
-The historical variables shown above were generated through grouping and aggregation processes to provide stronger predictive signals for the target variable: **student enrollment (`SECTENROLL`)**.
+These features allow the model to better understand:
 
-These engineered features allow the model to capture:
-
-- Historical enrollment behavior
-- Seasonal demand patterns
-- Instructional methodology trends
-- Scheduling frequency patterns
-- Cross-listed course relationships
+- Historical demand patterns
+- Seasonal enrollment behavior
+- Modality trends
+- Section frequency
+- Cross-listed section dynamics
 
 ---
 
 # Key Research Questions
 
-Throughout the planning and analysis stages, the project focuses on addressing the following questions:
+This project addresses several operational and analytical questions:
 
-- Can historical academic scheduling data accurately predict future course enrollment?
-- Can machine learning improve room assignment decision-making?
-- Can inefficient classroom usage be reduced through predictive analytics?
-- How accurately can enrollment demand be forecasted across different academic terms?
-- Can predictive scheduling reduce last-minute scheduling adjustments?
+- Can historical scheduling data accurately predict future enrollment?
+- Which features are most useful for forecasting demand?
+- How does enrollment behavior vary across academic terms?
+- Do instructional modalities influence section demand?
+- Can predictive analytics support earlier Registrar decision-making?
 
 ---
 
 # Success Metrics
 
-Project success is evaluated using both predictive performance metrics and operational scheduling outcomes.
+## Forecasting Metrics
 
-## Predictive Metrics
-
-- MAE (Mean Absolute Error)
-- RMSE (Root Mean Squared Error)
-- R² Score
-
-## Scheduling Optimization Metrics
-
-- Recommended vs. actual room match rate
-- Capacity utilization improvement
-- Reduction of under-capacity assignments
-- Reduction of over-capacity assignments
-- Conflict avoidance rate
+| Metric | Purpose |
+|---|---|
+| `MAE` | Average prediction error |
+| `RMSE` | Penalizes larger prediction errors |
+| `R² Score` | Measures explained enrollment variance |
 
 ---
 
-# PACE: Analyze
+# 🟨 PACE: Analyze
 
-During the Analyze phase, exploratory data analysis and feature engineering were performed to better understand enrollment patterns, scheduling behavior, and operational constraints.
-
-## Analysis Activities
-
-- Exploratory Data Analysis (EDA)
-- Enrollment distribution analysis
-- Room utilization analysis
-- Cross-listed section analysis
-- Time block analysis
-- Historical trend analysis
-- Correlation analysis
-- Feature engineering and selection
-
-Several visualizations were developed to identify:
-
-- Enrollment trends across terms
-- Instructional methodology behavior
-- Room utilization efficiency
-- Over-capacity and underutilized classrooms
-- Historical seasonal demand patterns
+The Analyze phase focused on exploratory data analysis, cleaning, standardization, and enrollment behavior analysis.
 
 ---
 
-# Machine Learning and Modeling
+# Data Sources
 
-The project evaluates multiple machine learning models for enrollment forecasting and scheduling optimization.
+The analysis used:
 
-## Models Evaluated
-
-- Linear Regression
-- Random Forest Regressor
-- Gradient Boosting Regressor
-- XGBoost Regressor
-
-## Model Optimization
-
-Model tuning and validation techniques include:
-
-- GridSearchCV
-- Cross-validation
-- Hyperparameter tuning
-- Feature importance analysis
-
-## Evaluation Metrics
-
-The following evaluation metrics were used to assess model performance:
-
-- Accuracy
-- Precision
-- Recall
-- F1-Score
-- AUC-ROC
-- MAE
-- RMSE
-- R² Score
+- Historical course scheduling data (Spring 2024 – Spring 2026)
+- Fall 2026 validation data
+- Registrar enrollment records
 
 ---
 
-# Tools and Technologies
+# Exploratory Data Analysis
 
-## Programming Languages
+## Key Observations
+
+### Instructional Modality Demand
+
+- In-person (`TD`) sections consistently show stronger enrollment demand.
+- Spring and Fall terms have the highest enrollment activity.
+- Summer enrollment patterns are lower and more concentrated.
+
+---
+
+## Course Cancellation Patterns
+
+Canceled sections occur more frequently during:
+
+- Spring
+- Fall
+
+This may reflect:
+- enrollment balancing
+- low-demand section consolidation
+- operational scheduling adjustments
+
+---
+
+## Trimester & Quarter Term Exclusion
+
+Trimester and Quarter terms were excluded because they:
+- contain lower-volume specialized sections
+- introduce statistical noise
+- reduce model generalization
+
+---
+
+## Capacity Demand Analysis
+
+Sections with maximum enrollment values of:
+
+- `20`
+- `25`
+
+frequently operate near or above capacity during Spring and Fall terms.
+
+This suggests recurring enrollment pressure and consistent demand concentration.
+
+---
+
+## Enrollment Ratio Trends
+
+Enrollment ratio was calculated using:
+
+```python
+enrollment_ratio = SECTENROLL / MAXENROLL
+```
+
+### Seasonal Enrollment Behavior
+
+| Term | Enrollment Trend |
+|---|---|
+| Spring | Higher |
+| Summer | Lower |
+| Fall | Higher |
+
+---
+
+## Demand by School & Modality
+
+Analysis revealed:
+
+- SLA courses dominate Spring and Fall demand.
+- Nursing and HNS courses drive Summer demand.
+- In-person sections generally outperform distance learning demand during primary academic terms.
+
+---
+
+# Data Challenges
+
+| Challenge | Impact |
+|---|---|
+| Variability in `MTGTIME` and `MTGDAYS` | Required standardization |
+| Cross-listed structures | Increased feature engineering complexity |
+| Enrollment outliers | Required outlier analysis |
+| Low-volume special terms | Reduced model stability |
+| High granularity | Reduced generalization across small groups |
+
+---
+
+# 🟦 PACE: Construct
+
+## Final Enrollment Forecasting Model
+
+The final model forecasts section-level enrollment using historical Registrar scheduling data.
+
+The forecasting workflow focuses entirely on:
+
+- course demand forecasting
+- enrollment prediction
+- academic scheduling analytics
+
+---
+
+# Step 1 — Data Cleaning & Filtering
+
+The dataset was standardized and filtered to include only:
+
+- Active sections
+- In-person (`TD`)
+- Hybrid (`BLD`)
+
+Distance learning modalities were consolidated into a single `DL` category.
+
+```python
+df['INST_METHOD_GROUPED'] = df['INST_METHOD'].replace({
+    'WB': 'DL',
+    'WH': 'DL',
+    'WS': 'DL'
+})
+```
+
+---
+
+# Step 2 — Historical Enrollment Features
+
+Historical enrollment behavior was aggregated using:
+
+```python
+course_history = (
+    historical_df
+    .groupby(['COURSE_CODE', 'INST_METHOD_GROUPED'])
+)
+```
+
+The model captures:
+
+- Average historical enrollment
+- Enrollment variability
+- Historical peak demand
+- Historical section frequency
+- Same-season enrollment behavior
+
+---
+
+# Step 3 — Seasonal Forecasting Strategy
+
+Instead of using one global model, the final approach trains separate models for:
+
+- Spring
+- Summer
+- Fall
+
+This improves forecasting performance because enrollment behavior differs significantly by season.
+
+---
+
+# Step 4 — Final Machine Learning Model
+
+The final forecasting model uses:
+
+```python
+XGBRegressor(
+    n_estimators=300,
+    max_depth=4,
+    learning_rate=0.05,
+    subsample=0.8,
+    colsample_bytree=0.8,
+    random_state=42
+)
+```
+
+XGBoost was selected because it:
+- handles structured tabular data effectively
+- captures nonlinear enrollment behavior
+- performs well with mixed feature types
+- improves predictive stability across academic terms
+
+---
+
+# Final Model Features
+
+| Feature Category | Examples |
+|---|---|
+| Historical Enrollment | Average enrollment, prior enrollment |
+| Course Features | Course code, modality |
+| Academic Term | Spring, Summer, Fall |
+| Schedule Features | Meeting days, time block |
+| Section Structure | Cross-listed indicators |
+
+---
+
+# Model Output
+
+```python
+predicted_enrollment_xgb
+```
+
+The final output predicts expected enrollment for each CRN in the target term.
+
+---
+
+# 🟥 PACE: Execute
+
+## Seasonal Validation Results
+
+The final seasonal XGBoost models achieved the following validation results:
+
+| Season | Validation Term | MAE | RMSE | R² |
+|---|---|---|---|---|
+| Spring | 202610 | 3.079 | 4.320 | 0.739 |
+| Summer | 202620 | 4.299 | 6.629 | 0.826 |
+| Fall | 202530 | 2.948 | 4.376 | 0.757 |
+
+---
+
+# Model Interpretation
+
+## Key Findings
+
+- The model performed consistently across all academic terms.
+- Fall achieved the lowest prediction error.
+- Summer achieved the highest explained variance (`R² = 0.826`).
+- Historical same-season enrollment behavior was one of the strongest predictive signals.
+- Enrollment forecasting performance improved significantly after:
+  - feature engineering
+  - seasonal segmentation
+  - outlier handling
+
+---
+
+# Business Impact
+
+The forecasting workflow supports Registrar operations by:
+
+- Improving visibility into future enrollment demand
+- Identifying high-demand sections earlier
+- Supporting proactive academic planning
+- Reducing uncertainty before registration periods
+- Helping departments anticipate enrollment pressure
+- Supporting data-driven scheduling conversations
+
+---
+
+# Ethical Considerations
+
+This project considers:
+
+- Responsible institutional data usage
+- Privacy and governance concerns
+- Transparency in model interpretation
+- Avoiding over-reliance on automated predictions
+- Bias monitoring across schools and modalities
+
+The model is intended to support decision-making rather than replace human academic planning processes.
+
+---
+
+# Tools & Technologies
+
+## Programming Language
 
 - Python
 
-## Libraries and Frameworks
+## Libraries
 
 - Pandas
 - NumPy
@@ -267,392 +483,37 @@ The following evaluation metrics were used to assess model performance:
 
 ---
 
-# Ethical Considerations
-
-This project considers ethical and operational concerns including:
-
-- Data privacy and governance
-- Fair resource allocation
-- Transparency in predictive modeling
-- Bias reduction in scheduling recommendations
-- Responsible use of institutional data
-
----
-
-# Expected Impact
-
-The proposed predictive scheduling system aims to:
-
-- Improve classroom utilization
-- Increase forecasting accuracy
-- Reduce scheduling conflicts
-- Enhance institutional planning
-- Support data-driven decision-making within the Registrar’s Office
-
----
-
 # Future Improvements
 
-Potential future enhancements for the project include:
+Potential future enhancements include:
 
-- Real-time room recommendation systems
-- Automated scheduling optimization
-- Integration with institutional scheduling platforms
-- Predictive waitlist analysis
-- Deep learning forecasting models
-- Interactive scheduling dashboards
-- Real-time room conflict detection
-
----
-
-# Exploratory Data Analysis (EDA)
-
-## PACE: Analyze
-
-This section focuses on the exploratory analysis of historical academic scheduling and enrollment data used for the **Course Demand Forecasting for Academic Scheduling** project.
+- Adding additional historical years
+- Incorporating waitlist forecasting
+- Adding department-level demand indicators
+- Developing SHAP-based explainability dashboards
+- Building interactive Tableau or Power BI dashboards
+- Automating term-to-term forecasting workflows
+- Monitoring long-term model drift
 
 ---
 
-# Data Sources
+# Final Project Positioning
 
-The analysis was conducted using multiple institutional datasets:
+## Interview Summary
 
-- Historical course data (Spring 2024 – Spring 2026)
-- Fall 2026 validation dataset
-- Room inventory dataset (cleaned and deduplicated)
-- Room preference mapping (`RDEF_PREF1`)
+> “I developed a seasonal machine learning workflow to forecast section-level course enrollment using historical academic scheduling data, helping Registrar teams improve academic planning, identify demand patterns, and support data-driven scheduling decisions.”
 
 ---
 
-# Key Features
+# Strategic Outcome
 
-## Course Information
+This project demonstrates how predictive analytics can help Registrar departments transition from reactive scheduling support toward proactive academic planning.
 
-| Feature | Description |
-|---|---|
-| `SUBJECT + CRSNUMBER` | Course identifier (Example: `BIOL130`) |
-| `CRN` | Course Reference Number |
-| `TITLE` | Course title |
-| `CRSLEVEL` | Course level |
+By forecasting enrollment demand before final registration is known, the workflow provides earlier visibility into:
 
----
+- section demand
+- modality trends
+- seasonal enrollment behavior
+- operational planning needs
 
-## Enrollment Metrics
-
-| Feature | Description |
-|---|---|
-| `SECTENROLL` | Current student enrollment |
-| `MAXENROLL` | Maximum enrollment allowed |
-| `AVAILSEATS` | Remaining available seats |
-
----
-
-## Schedule Attributes
-
-| Feature | Description |
-|---|---|
-| `MTGTIME` | Meeting time range |
-| `MTGDAYS` | Meeting days |
-| `PARTTERM` | Academic part of term |
-
----
-
-## Instruction Modalities
-
-| Modality | Description |
-|---|---|
-| `TD` | In-person |
-| `BLD` | Hybrid |
-| `DL` | Online |
-
----
-
-## Campus Information
-
-| Campus Code | Campus |
-|---|---|
-| `DF` | Dobbs Ferry |
-| `MEH` | Mercy Hall |
-| `MT` | Manhattan |
-
----
-
-## Cross-Listed Sections
-
-`XLST_GROUP` identifies sections sharing:
-- the same room
-- meeting time
-- instructional structure
-
----
-
-# Exploratory Data Analysis Workflow
-
----
-
-# Step 1 — Import Libraries
-
-```python
-# Data manipulation
-import numpy as np
-import pandas as pd
-
-# Data visualization
-import matplotlib.pyplot as plt
-import seaborn as sns
-import math
-
-# Statistical analysis
-from scipy.stats import f_oneway
-
-# Machine learning models
-from sklearn.ensemble import RandomForestRegressor
-from sklearn.ensemble import HistGradientBoostingRegressor
-from xgboost import XGBRegressor
-
-# Evaluation metrics
-from sklearn.metrics import (
-    mean_absolute_error,
-    mean_squared_error,
-    r2_score
-)
-```
-
----
-
-# Step 2 — Load Dataset
-
-The dataset was imported using Pandas.
-
-```python
-df0 = pd.read_csv("df0.csv")
-```
-
----
-
-# Step 3 — Dataset Overview
-
-## Dataset Dimensions
-
-- **Rows:** 17,908
-- **Columns:** 35
-
----
-
-## Dataset Information
-
-```python
-df.info()
-```
-
-### Output
-
-```python
-<class 'pandas.core.frame.DataFrame'>
-RangeIndex: 17908 entries, 0 to 17907
-Data columns (total 35 columns):
-```
-
-### Key Observations
-
-- Most variables are categorical scheduling attributes.
-- Enrollment and capacity fields are numerical.
-- Room-related fields contain null values for:
-  - online sections
-  - inactive sections
-  - unscheduled sections
-
----
-
-# Step 4 — Descriptive Statistics
-
-```python
-df.describe()
-```
-
----
-
-## Enrollment Insights
-
-| Metric | Value |
-|---|---|
-| Average Enrollment | ~13.5 students |
-| Average Max Enrollment | ~22 students |
-| Maximum Enrollment | 143 students |
-
----
-
-## Room Capacity Insights
-
-| Metric | Value |
-|---|---|
-| Average Room Capacity | ~31 seats |
-| Maximum Room Capacity | 300 seats |
-
----
-
-# Step 5 — Missing Values Assessment
-
-```python
-df0.isnull().sum()
-```
-
----
-
-## Key Findings
-
-Several fields contain null values; however, most are expected due to scheduling structure or course modality.
-
-### Expected Missing Values
-
-| Feature | Reason |
-|---|---|
-| `XLST_GROUP` | Most sections are not cross-listed |
-| `ROOM`, `BLDG`, `MAXCAPACITY` | Online or inactive sections |
-| `RDEF_PREF1` | Not all sections require room preferences |
-| `ALT_TITLE` | Only applicable to selected sections |
-
----
-
-## Conclusion
-
-The missing values were considered structurally valid and did not indicate significant data quality issues.
-
----
-
-# Step 6 — Duplicate Detection
-
-```python
-df0.duplicated().sum()
-```
-
-### Output
-
-```python
-29
-```
-
----
-
-## Remove Duplicates
-
-```python
-df1 = df0.drop_duplicates(keep='first')
-```
-
-### Result
-
-- 29 duplicate rows were removed to improve dataset consistency.
-
----
-
-# Step 7 — Outlier Analysis
-
-A boxplot was created to analyze enrollment distribution and detect extreme values.
-
-```python
-plt.figure(figsize=(6,6))
-
-plt.title(
-    'Boxplot to Detect Outliers in Student Demand',
-    fontsize=12
-)
-
-sns.boxplot(x=df1['SECTENROLL'])
-
-plt.show()
-```
-
----
-
-## Findings
-
-- Average enrollment ranged between **17–18 students per section**
-- Significant outliers were identified
-
-### Main Causes of Outliers
-
-- Historically combined sections
-- Cross-listed courses
-- Exceptionally large lecture sections
-
-These values could negatively impact predictive model performance.
-
----
-
-# Step 8 — Interquartile Range (IQR) Method
-
-The IQR method was used to identify enrollment outliers.
-
-```python
-# Compute quartiles
-percentile25 = df1['SECTENROLL'].quantile(0.25)
-percentile75 = df1['SECTENROLL'].quantile(0.75)
-
-# Compute IQR
-iqr = percentile75 - percentile25
-
-# Define limits
-upper_limit = percentile75 + 1.5 * iqr
-lower_limit = percentile25 - 1.5 * iqr
-
-print("Lower limit:", lower_limit)
-print("Upper limit:", upper_limit)
-
-# Identify outliers
-outliers = df1[
-    (df1['SECTENROLL'] > upper_limit) |
-    (df1['SECTENROLL'] < lower_limit)
-]
-```
-
----
-
-# Purpose of Outlier Detection
-
-The objective of this process was to:
-- identify unusually large or small sections
-- reduce noise in predictive modeling
-- improve forecasting accuracy
-- minimize the influence of exceptional academic offerings
-
----
-
-# Exploratory Insights
-
-## Key Observations
-
-- Average enrollment typically ranged between:
-  - **17–18 students per section**
-
-- Large enrollment outliers were mainly associated with:
-  - combined sections
-  - cross-listed courses
-  - special academic offerings
-
-- Room-related null values were primarily linked to:
-  - online sections
-  - inactive sections
-  - future unscheduled sections
-
----
-
-# Initial Conclusions
-
-The dataset demonstrated strong potential for predictive modeling after:
-- duplicate removal
-- outlier handling
-- feature engineering
-- data standardization
-
-The EDA process provided a foundational understanding of:
-- enrollment behavior
-- scheduling patterns
-- room utilization
-- instructional modalities
-- institutional scheduling constraints
-
-which later supported:
-- enrollment forecasting
-- room recommendation systems
-- scheduling optimization models
+while strengthening data-driven decision-making across academic scheduling operations.
