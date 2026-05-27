@@ -304,3 +304,355 @@ Potential future enhancements for the project include:
 - Real-time room conflict detection
 
 ---
+
+# Exploratory Data Analysis (EDA)
+
+## PACE: Analyze
+
+This section focuses on the exploratory analysis of historical academic scheduling and enrollment data used for the **Course Demand Forecasting for Academic Scheduling** project.
+
+---
+
+# Data Sources
+
+The analysis was conducted using multiple institutional datasets:
+
+- Historical course data (Spring 2024 – Spring 2026)
+- Fall 2026 validation dataset
+- Room inventory dataset (cleaned and deduplicated)
+- Room preference mapping (`RDEF_PREF1`)
+
+---
+
+# Key Features
+
+## Course Information
+
+| Feature | Description |
+|---|---|
+| `SUBJECT + CRSNUMBER` | Course identifier (Example: `BIOL130`) |
+| `CRN` | Course Reference Number |
+| `TITLE` | Course title |
+| `CRSLEVEL` | Course level |
+
+---
+
+## Enrollment Metrics
+
+| Feature | Description |
+|---|---|
+| `SECTENROLL` | Current student enrollment |
+| `MAXENROLL` | Maximum enrollment allowed |
+| `AVAILSEATS` | Remaining available seats |
+
+---
+
+## Schedule Attributes
+
+| Feature | Description |
+|---|---|
+| `MTGTIME` | Meeting time range |
+| `MTGDAYS` | Meeting days |
+| `PARTTERM` | Academic part of term |
+
+---
+
+## Instruction Modalities
+
+| Modality | Description |
+|---|---|
+| `TD` | In-person |
+| `BLD` | Hybrid |
+| `DL` | Online |
+
+---
+
+## Campus Information
+
+| Campus Code | Campus |
+|---|---|
+| `DF` | Dobbs Ferry |
+| `MEH` | Mercy Hall |
+| `MT` | Manhattan |
+
+---
+
+## Cross-Listed Sections
+
+`XLST_GROUP` identifies sections sharing:
+- the same room
+- meeting time
+- instructional structure
+
+---
+
+# Exploratory Data Analysis Workflow
+
+---
+
+# Step 1 — Import Libraries
+
+```python
+# Data manipulation
+import numpy as np
+import pandas as pd
+
+# Data visualization
+import matplotlib.pyplot as plt
+import seaborn as sns
+import math
+
+# Statistical analysis
+from scipy.stats import f_oneway
+
+# Machine learning models
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.ensemble import HistGradientBoostingRegressor
+from xgboost import XGBRegressor
+
+# Evaluation metrics
+from sklearn.metrics import (
+    mean_absolute_error,
+    mean_squared_error,
+    r2_score
+)
+```
+
+---
+
+# Step 2 — Load Dataset
+
+The dataset was imported using Pandas.
+
+```python
+df0 = pd.read_csv("df0.csv")
+```
+
+---
+
+# Step 3 — Dataset Overview
+
+## Dataset Dimensions
+
+- **Rows:** 17,908
+- **Columns:** 35
+
+---
+
+## Dataset Information
+
+```python
+df.info()
+```
+
+### Output
+
+```python
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 17908 entries, 0 to 17907
+Data columns (total 35 columns):
+```
+
+### Key Observations
+
+- Most variables are categorical scheduling attributes.
+- Enrollment and capacity fields are numerical.
+- Room-related fields contain null values for:
+  - online sections
+  - inactive sections
+  - unscheduled sections
+
+---
+
+# Step 4 — Descriptive Statistics
+
+```python
+df.describe()
+```
+
+---
+
+## Enrollment Insights
+
+| Metric | Value |
+|---|---|
+| Average Enrollment | ~13.5 students |
+| Average Max Enrollment | ~22 students |
+| Maximum Enrollment | 143 students |
+
+---
+
+## Room Capacity Insights
+
+| Metric | Value |
+|---|---|
+| Average Room Capacity | ~31 seats |
+| Maximum Room Capacity | 300 seats |
+
+---
+
+# Step 5 — Missing Values Assessment
+
+```python
+df0.isnull().sum()
+```
+
+---
+
+## Key Findings
+
+Several fields contain null values; however, most are expected due to scheduling structure or course modality.
+
+### Expected Missing Values
+
+| Feature | Reason |
+|---|---|
+| `XLST_GROUP` | Most sections are not cross-listed |
+| `ROOM`, `BLDG`, `MAXCAPACITY` | Online or inactive sections |
+| `RDEF_PREF1` | Not all sections require room preferences |
+| `ALT_TITLE` | Only applicable to selected sections |
+
+---
+
+## Conclusion
+
+The missing values were considered structurally valid and did not indicate significant data quality issues.
+
+---
+
+# Step 6 — Duplicate Detection
+
+```python
+df0.duplicated().sum()
+```
+
+### Output
+
+```python
+29
+```
+
+---
+
+## Remove Duplicates
+
+```python
+df1 = df0.drop_duplicates(keep='first')
+```
+
+### Result
+
+- 29 duplicate rows were removed to improve dataset consistency.
+
+---
+
+# Step 7 — Outlier Analysis
+
+A boxplot was created to analyze enrollment distribution and detect extreme values.
+
+```python
+plt.figure(figsize=(6,6))
+
+plt.title(
+    'Boxplot to Detect Outliers in Student Demand',
+    fontsize=12
+)
+
+sns.boxplot(x=df1['SECTENROLL'])
+
+plt.show()
+```
+
+---
+
+## Findings
+
+- Average enrollment ranged between **17–18 students per section**
+- Significant outliers were identified
+
+### Main Causes of Outliers
+
+- Historically combined sections
+- Cross-listed courses
+- Exceptionally large lecture sections
+
+These values could negatively impact predictive model performance.
+
+---
+
+# Step 8 — Interquartile Range (IQR) Method
+
+The IQR method was used to identify enrollment outliers.
+
+```python
+# Compute quartiles
+percentile25 = df1['SECTENROLL'].quantile(0.25)
+percentile75 = df1['SECTENROLL'].quantile(0.75)
+
+# Compute IQR
+iqr = percentile75 - percentile25
+
+# Define limits
+upper_limit = percentile75 + 1.5 * iqr
+lower_limit = percentile25 - 1.5 * iqr
+
+print("Lower limit:", lower_limit)
+print("Upper limit:", upper_limit)
+
+# Identify outliers
+outliers = df1[
+    (df1['SECTENROLL'] > upper_limit) |
+    (df1['SECTENROLL'] < lower_limit)
+]
+```
+
+---
+
+# Purpose of Outlier Detection
+
+The objective of this process was to:
+- identify unusually large or small sections
+- reduce noise in predictive modeling
+- improve forecasting accuracy
+- minimize the influence of exceptional academic offerings
+
+---
+
+# Exploratory Insights
+
+## Key Observations
+
+- Average enrollment typically ranged between:
+  - **17–18 students per section**
+
+- Large enrollment outliers were mainly associated with:
+  - combined sections
+  - cross-listed courses
+  - special academic offerings
+
+- Room-related null values were primarily linked to:
+  - online sections
+  - inactive sections
+  - future unscheduled sections
+
+---
+
+# Initial Conclusions
+
+The dataset demonstrated strong potential for predictive modeling after:
+- duplicate removal
+- outlier handling
+- feature engineering
+- data standardization
+
+The EDA process provided a foundational understanding of:
+- enrollment behavior
+- scheduling patterns
+- room utilization
+- instructional modalities
+- institutional scheduling constraints
+
+which later supported:
+- enrollment forecasting
+- room recommendation systems
+- scheduling optimization models
