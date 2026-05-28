@@ -87,6 +87,7 @@ The project includes:
 # PACE Framework
 
 This project follows Google's PACE Framework:
+![PACE Framework](pace.jpg)
 
 | Stage | Description |
 |---|---|
@@ -215,7 +216,8 @@ The analysis used:
 - In-person (`TD`) sections consistently show stronger enrollment demand.
 - Spring and Fall terms have the highest enrollment activity.
 - Summer enrollment patterns are lower and more concentrated.
-
+  
+![Distribution Analysis](enrollment.jpg)
 ---
 
 ## Course Cancellation Patterns
@@ -247,6 +249,8 @@ Sections with maximum enrollment values of:
 
 - `20`
 - `25`
+  
+![Disperse Analysis](max_enrollment.jpg)
 
 frequently operate near or above capacity during Spring and Fall terms.
 
@@ -261,6 +265,7 @@ Enrollment ratio was calculated using:
 ```python
 enrollment_ratio = SECTENROLL / MAXENROLL
 ```
+![Boxplot Analysis](ratio.jpg)
 
 ### Seasonal Enrollment Behavior
 
