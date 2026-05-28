@@ -3,7 +3,7 @@
 
 A machine learning project focused on forecasting **section-level course enrollment demand** using historical academic scheduling data from the Registrar’s Office at Mercy University.
 
-The project applies predictive analytics, feature engineering, and seasonal machine learning models to support proactive academic planning, enrollment forecasting, and data-driven Registrar operations.
+The project applies predictive analytics, feature engineering, and seasonal machine learning models to support proactive academic planning, enrollment forecasting, and data-driven Scheduling operations.
 
 ---
 
@@ -29,7 +29,7 @@ using historical Registrar scheduling data.
 
 # Business Problem
 
-Registrar offices often experience uncertainty around future course demand before student registration is finalized.
+The Scheduling team often experience uncertainty around future course demand before student registration is finalized.
 
 This can lead to:
 
@@ -52,7 +52,7 @@ The project focuses on:
 - Identifying seasonal enrollment trends
 - Understanding modality-based enrollment behavior
 - Supporting proactive academic scheduling decisions
-- Improving data-driven planning within Registrar operations
+- Improving data-driven planning within Scheduling operations
 - Providing interpretable forecasting insights for stakeholders
 
 ---
@@ -177,7 +177,7 @@ This project addresses several operational and analytical questions:
 - Which features are most useful for forecasting demand?
 - How does enrollment behavior vary across academic terms?
 - Do instructional modalities influence section demand?
-- Can predictive analytics support earlier Registrar decision-making?
+- Can predictive analytics support earlier Scheduling decision-making?
 
 ---
 
@@ -205,7 +205,7 @@ The analysis used:
 
 - Historical course scheduling data (Spring 2024 – Spring 2026)
 - Fall 2026 validation data
-- Registrar enrollment records
+- Scheduling enrollment records
 
 ---
 
@@ -307,7 +307,7 @@ Analysis revealed:
 
 ## Final Enrollment Forecasting Model
 
-The final model forecasts section-level enrollment using historical Registrar scheduling data.
+The final model forecasts section-level enrollment using historical scheduling data.
 
 The forecasting workflow focuses entirely on:
 
@@ -603,9 +603,9 @@ which validates the decision to train separate seasonal models.
 
 ---
 
-# Operational Interpretation for Registrar Teams
+# Operational Interpretation for the Scheduling Team
 
-From a Registrar operations perspective, forecasting within approximately:
+From a Scheduling perspective, forecasting within approximately:
 
 ```python
 ±3 students
@@ -625,7 +625,7 @@ Examples of operational value include:
 
 # Business Impact
 
-The forecasting workflow supports Registrar operations by:
+The forecasting workflow supports Scheduling operations by:
 
 - Improving visibility into future enrollment demand
 - Identifying high-demand sections earlier
@@ -687,7 +687,7 @@ Potential future enhancements include:
 
 # Strategic Outcome
 
-This project demonstrates how predictive analytics can help Registrar departments transition from reactive scheduling support toward proactive academic planning.
+This project demonstrates how predictive analytics can help transition from reactive scheduling support toward proactive academic planning.
 
 By forecasting enrollment demand before final registration is known, the workflow provides earlier visibility into:
 
@@ -698,7 +698,7 @@ By forecasting enrollment demand before final registration is known, the workflo
 
 ---
 
-# Registrar Operational Resolution
+# Scheduling Operational Outcome
 
 One of the proposed operational outcomes of this project is the integration of forecasted enrollment values directly into future academic section rolls.
 
@@ -710,7 +710,7 @@ This creates several operational advantages:
 - Earlier identification of high-demand courses
 - Better planning for section offerings
 - Stronger support for proactive scheduling decisions
-- Enhanced communication between Registrar teams and academic departments
+- Enhanced communication between the Scheduling team and academic departments
 
 ---
 
@@ -742,6 +742,6 @@ Over time, this forecasting workflow can help institutions:
 - improve forecasting visibility
 - reduce reactive scheduling adjustments
 - support evidence-based decision-making
-- improve operational efficiency across Registrar workflows
+- improve operational efficiency across Scheduling workflows
 
 while maintaining human oversight and institutional scheduling expertise.
