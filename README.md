@@ -429,18 +429,197 @@ The final seasonal XGBoost models achieved the following validation results:
 
 ---
 
-# Model Interpretation
+# Understanding the Evaluation Metrics
 
-## Key Findings
+The model was evaluated using three primary regression metrics:
 
-- The model performed consistently across all academic terms.
-- Fall achieved the lowest prediction error.
-- Summer achieved the highest explained variance (`R² = 0.826`).
-- Historical same-season enrollment behavior was one of the strongest predictive signals.
-- Enrollment forecasting performance improved significantly after:
-  - feature engineering
-  - seasonal segmentation
-  - outlier handling
+| Metric | Meaning |
+|---|---|
+| `MAE` | Average enrollment prediction error |
+| `RMSE` | Measures larger prediction errors more heavily |
+| `R²` | Measures how much enrollment variation is explained by the model |
+
+---
+
+# MAE — Mean Absolute Error
+
+## Definition
+
+MAE measures the average difference between:
+
+- predicted enrollment
+- actual enrollment
+
+The lower the MAE, the more accurate the model predictions are on average.
+
+---
+
+## Example
+
+If a section actually enrolled:
+
+```python
+30 students
+```
+
+and the model predicted:
+
+```python
+27 students
+```
+
+the prediction error is:
+
+```python
+3 students
+```
+
+---
+
+## Interpretation of Results
+
+| Season | MAE Interpretation |
+|---|---|
+| Spring | Predictions are off by approximately 3 students on average |
+| Summer | Predictions are off by approximately 4.3 students on average |
+| Fall | Predictions are off by approximately 2.9 students on average |
+
+---
+
+## Key Insight
+
+The Fall model achieved the lowest average prediction error, meaning it generated the most precise enrollment forecasts overall.
+
+This suggests Fall enrollment behavior is:
+- more stable
+- more historically consistent
+- easier for the model to learn
+
+---
+
+# RMSE — Root Mean Squared Error
+
+## Definition
+
+RMSE measures prediction error similarly to MAE but gives larger penalties to bigger mistakes.
+
+This helps identify whether the model occasionally produces large forecasting errors.
+
+---
+
+## Example
+
+Suppose two sections have prediction errors:
+
+| Section | Error |
+|---|---|
+| Section A | 2 students |
+| Section B | 12 students |
+
+RMSE penalizes the 12-student error more heavily than MAE.
+
+---
+
+## Interpretation of Results
+
+| Season | RMSE Interpretation |
+|---|---|
+| Spring | Some larger forecasting errors exist but remain controlled |
+| Summer | Greater enrollment variability creates larger prediction swings |
+| Fall | Forecasting remains relatively stable |
+
+---
+
+## Key Insight
+
+Summer produced the highest RMSE because summer enrollment behavior is:
+- less consistent
+- more volatile
+- lower volume
+- heavily dependent on specific programs and modalities
+
+Even though Summer achieved the strongest R² score, its enrollment variability increases large-error sensitivity.
+
+---
+
+# R² — Coefficient of Determination
+
+## Definition
+
+R² measures how much of the enrollment variation can be explained by the model.
+
+Values closer to:
+
+```python
+1.0
+```
+
+indicate stronger predictive performance.
+
+---
+
+## Interpretation of Results
+
+| Season | R² Interpretation |
+|---|---|
+| Spring | Model explains ~74% of enrollment variation |
+| Summer | Model explains ~83% of enrollment variation |
+| Fall | Model explains ~76% of enrollment variation |
+
+---
+
+## Key Insight
+
+The Summer model achieved the highest R² value:
+
+```python
+0.826
+```
+
+meaning the model successfully captured most of the enrollment behavior during Summer terms.
+
+This may occur because:
+- Summer offerings are smaller
+- fewer modalities are offered
+- scheduling patterns are more concentrated
+- fewer sections create more identifiable enrollment behavior
+
+---
+
+# Overall Model Interpretation
+
+The seasonal forecasting strategy demonstrated strong predictive performance across all academic terms.
+
+## Main Findings
+
+- Historical enrollment behavior is highly predictive of future enrollment.
+- Same-season historical enrollment is one of the strongest forecasting signals.
+- Enrollment behavior differs significantly between:
+  - Spring
+  - Summer
+  - Fall
+
+which validates the decision to train separate seasonal models.
+
+---
+
+# Operational Interpretation for Registrar Teams
+
+From a Registrar operations perspective, forecasting within approximately:
+
+```python
+±3 students
+```
+
+for most Spring and Fall sections provides meaningful planning value before registration begins.
+
+Examples of operational value include:
+
+- identifying sections likely to exceed capacity
+- monitoring low-demand offerings earlier
+- anticipating enrollment pressure by modality
+- supporting discussions with academic departments
+- improving section planning visibility before schedules finalize
 
 ---
 
@@ -517,4 +696,52 @@ By forecasting enrollment demand before final registration is known, the workflo
 - seasonal enrollment behavior
 - operational planning needs
 
-while strengthening data-driven decision-making across academic scheduling operations.
+---
+
+# Registrar Operational Resolution
+
+One of the proposed operational outcomes of this project is the integration of forecasted enrollment values directly into future academic section rolls.
+
+The forecasted enrollment amount can be added as a reference value during the rolling process for future terms, allowing scheduling teams and academic departments to review predicted demand before schedules are finalized.
+
+This creates several operational advantages:
+
+- Improved visibility into expected section demand
+- Earlier identification of high-demand courses
+- Better planning for section offerings
+- Stronger support for proactive scheduling decisions
+- Enhanced communication between Registrar teams and academic departments
+
+---
+
+# Example Use Case
+
+When rolling a future section into an upcoming term:
+
+| CRN | Course | Historical Avg | Forecasted Enrollment |
+|---|---|---|---|
+| 24510 | BIOL130 | 24 | 31 |
+| 24522 | ENGL110 | 18 | 17 |
+| 24531 | NURS320 | 20 | 34 |
+
+Scheduling teams could immediately identify:
+
+- sections likely to experience enrollment pressure
+- sections potentially requiring additional offerings
+- courses showing declining demand trends
+
+before registration officially begins.
+
+---
+
+# Long-Term Institutional Value
+
+Over time, this forecasting workflow can help institutions:
+
+- strengthen academic planning
+- improve forecasting visibility
+- reduce reactive scheduling adjustments
+- support evidence-based decision-making
+- improve operational efficiency across Registrar workflows
+
+while maintaining human oversight and institutional scheduling expertise.
