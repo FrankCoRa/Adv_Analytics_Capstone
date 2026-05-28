@@ -87,6 +87,8 @@ The project includes:
 # PACE Framework
 
 This project follows Google's PACE Framework:
+
+
 ![PACE Framework](pace.jpg)
 
 | Stage | Description |
@@ -265,7 +267,6 @@ Enrollment ratio was calculated using:
 ```python
 enrollment_ratio = SECTENROLL / MAXENROLL
 ```
-![Boxplot Analysis](ratio.jpg)
 
 ### Seasonal Enrollment Behavior
 
@@ -275,6 +276,8 @@ enrollment_ratio = SECTENROLL / MAXENROLL
 | Summer | Lower |
 | Fall | Higher |
 
+
+![Boxplot Analysis](ratio.jpg)
 ---
 
 ## Demand by School & Modality
