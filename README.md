@@ -503,14 +503,6 @@ Potential future enhancements include:
 
 ---
 
-# Final Project Positioning
-
-## Interview Summary
-
-> “I developed a seasonal machine learning workflow to forecast section-level course enrollment using historical academic scheduling data, helping Registrar teams improve academic planning, identify demand patterns, and support data-driven scheduling decisions.”
-
----
-
 # Strategic Outcome
 
 This project demonstrates how predictive analytics can help Registrar departments transition from reactive scheduling support toward proactive academic planning.
