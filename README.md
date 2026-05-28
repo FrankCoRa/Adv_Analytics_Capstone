@@ -285,6 +285,7 @@ Analysis revealed:
 - Nursing and HNS courses drive Summer demand.
 - In-person sections generally outperform distance learning demand during primary academic terms.
 
+![Bar-graph Analysis](top_30.jpg)
 ---
 
 # Data Challenges
