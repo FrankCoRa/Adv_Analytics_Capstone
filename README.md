@@ -302,7 +302,339 @@ Analysis revealed:
 | High granularity | Reduced generalization across small groups |
 
 ---
+# Variable Selection and Correlation Analysis
 
+To make the forecasting model more transparent, we reviewed which variables were included in each seasonal model and evaluated how strongly numerical variables relate to actual enrollment.
+
+---
+
+## Step 1 — Review Variables Used by Each Seasonal Model
+
+```python
+for season, (model, train_cols) in models.items():
+    print(f"\n{season} MODEL VARIABLES ({len(train_cols)})")
+    print(sorted(train_cols))
+```
+
+This code prints the variables used by each model, separated by season.
+
+Because Spring, Summer, and Fall have different enrollment behaviors, each seasonal model may use a slightly different set of variables.
+
+### Why this matters
+
+For non-technical users, this step helps answer:
+
+> “What information is the model using to make predictions?”
+
+For data users, this confirms:
+
+- which features were passed into training
+- whether each seasonal model uses the expected variables
+- whether irrelevant or redundant variables were removed
+
+---
+
+## Step 2 — Convert Model Variables into a Table
+
+```python
+for season, (model, train_cols) in models.items():
+    vars_df = pd.DataFrame({
+        'Variable': train_cols
+    })
+    
+    print(f"\n{season}")
+    print(vars_df)
+```
+
+This code displays the model variables in a cleaner table format.
+
+### Purpose
+
+Instead of only printing a list of variables, the table makes it easier to document and review the final model inputs.
+
+This is especially helpful for:
+
+- project documentation
+- technical reports
+- README files
+- stakeholder explanations
+- model transparency
+
+---
+
+# Step 3 — Identify Numerical Variables
+
+```python
+num_vars = train_df.select_dtypes(include=['number']).columns
+```
+
+This code selects only numerical columns from the training dataset.
+
+Examples of numerical variables may include:
+
+- `SECTENROLL`
+- `MAXENROLL`
+- `hist_avg_enroll`
+- `hist_std_enroll`
+- `hist_max_enroll`
+- `last_hist_enroll`
+- `last_same_term_enroll`
+
+### Why only numerical variables?
+
+Correlation analysis works best with numerical data because it measures how strongly two numeric values move together.
+
+Categorical fields such as course, campus, modality, or meeting days are important, but they need to be encoded before they can be used in most machine learning models.
+
+---
+
+# Step 4 — Build a Correlation Matrix
+
+```python
+corr_matrix = train_df[num_vars].corr()
+```
+
+The correlation matrix compares every numerical variable against every other numerical variable.
+
+Correlation values range from:
+
+| Value | Meaning |
+|---|---|
+| `+1.00` | Strong positive relationship |
+| `0.00` | No clear linear relationship |
+| `-1.00` | Strong negative relationship |
+
+---
+
+# Step 5 — Visualize the Correlation Heatmap
+
+```python
+plt.figure(figsize=(14,10))
+
+sns.heatmap(
+    corr_matrix,
+    annot=True,
+    fmt='.2f',
+    cmap='coolwarm',
+    center=0
+)
+
+plt.title('Correlation Heatmap - Numerical Features')
+plt.tight_layout()
+plt.show()
+```
+
+The heatmap helps visually identify relationships between numerical variables.
+
+### How to read it
+
+- Strong positive values mean two variables increase together.
+- Strong negative values mean one variable increases while the other decreases.
+- Values close to zero suggest little or no linear relationship.
+
+---
+
+## Example Interpretation
+
+If `MAXENROLL` has a strong positive correlation with `SECTENROLL`, it means courses with larger enrollment caps usually tend to enroll more students.
+
+If `AVAILSEATS` is highly related to `SECTENROLL`, it may create redundancy because available seats are directly connected to enrollment and capacity.
+
+---
+
+# Step 6 — Measure Correlation with Enrollment
+
+```python
+corr_target = (
+    train_df
+    .select_dtypes(include=['number'])
+    .corr()['SECTENROLL']
+    .sort_values()
+)
+```
+
+This code focuses only on the relationship between each numerical variable and the target variable:
+
+```python
+SECTENROLL
+```
+
+`SECTENROLL` represents actual student enrollment and is the value the model is trying to predict.
+
+---
+
+# Step 7 — Plot Correlation with Enrollment
+
+```python
+plt.figure(figsize=(8,6))
+
+corr_target.drop('SECTENROLL').plot(kind='barh')
+
+plt.title('Correlation with Enrollment (SECTENROLL)')
+plt.xlabel('Correlation')
+plt.tight_layout()
+plt.show()
+```
+
+This chart ranks numerical variables based on how strongly they relate to enrollment.
+
+### Purpose
+
+This helps identify which variables may be useful predictors and which variables may add little value.
+
+---
+
+# Variable Selection Methodology
+
+Variables were selected using a combination of:
+
+1. **Domain knowledge**
+2. **Correlation analysis**
+3. **Redundancy checks**
+4. **Model interpretability**
+5. **Operational relevance**
+
+---
+
+## 1. Domain Knowledge
+
+Variables were first reviewed based on whether they make sense in a real scheduling environment.
+
+For example:
+
+| Variable | Why it matters |
+|---|---|
+| `COURSE_CODE` | Different courses have different demand levels |
+| `CAMPUS` | Demand may vary by campus |
+| `INST_METHOD_GROUPED` | In-person, hybrid, and online courses behave differently |
+| `MTGDAYS` | Meeting patterns affect enrollment behavior |
+| `TIME_BLOCK` | Morning, afternoon, and evening sections may attract different demand |
+| `MAXENROLL` | Course capacity often reflects expected demand |
+
+This ensured the model used variables that are meaningful to Registrar operations.
+
+---
+
+## 2. Correlation Analysis
+
+Correlation analysis was used to understand how numerical variables relate to enrollment.
+
+Variables with stronger relationships to `SECTENROLL` were considered more useful for prediction.
+
+For example:
+
+```python
+corr_target = train_df.select_dtypes(include=['number']).corr()['SECTENROLL']
+```
+
+This helped identify variables such as:
+
+- `MAXENROLL`
+- `hist_avg_enroll`
+- `hist_max_enroll`
+- `last_hist_enroll`
+- `last_same_term_enroll`
+
+as important predictors of enrollment demand.
+
+---
+
+## 3. Redundancy Checks
+
+Some variables were removed when they repeated the same information or were too directly connected to the target variable.
+
+### Example
+
+`AVAILSEATS` was removed because it is mathematically related to enrollment:
+
+```python
+AVAILSEATS = MAXENROLL - SECTENROLL
+```
+
+Including this variable could cause data leakage because it gives the model indirect information about the value it is trying to predict.
+
+### Why this is important
+
+For non-technical users:
+
+> The model should predict enrollment using information available before enrollment is finalized, not information that already depends on enrollment.
+
+For data users:
+
+> Removing leakage variables improves model validity and prevents artificially inflated performance.
+
+---
+
+## 4. Model Interpretability
+
+Variables were also selected based on whether their meaning could be explained clearly.
+
+The goal was not only to build a model that performs well, but also one that stakeholders can understand and trust.
+
+For example, variables like:
+
+- historical average enrollment
+- last same-term enrollment
+- course modality
+- campus
+- maximum enrollment
+
+are easier to explain than unclear or overly granular fields.
+
+---
+
+## 5. Operational Relevance
+
+The selected variables needed to support real scheduling decisions.
+
+Variables were prioritized when they could help answer questions such as:
+
+- Which courses are likely to have high demand?
+- Which sections may need larger rooms?
+- Which campuses have stronger in-person demand?
+- Which meeting patterns usually enroll more students?
+- Which historical trends should guide future scheduling?
+
+---
+
+# Final Variable Selection Logic
+
+The final model variables were selected when they met most of the following criteria:
+
+| Criteria | Description |
+|---|---|
+| Predictive Value | Related to enrollment demand |
+| Operational Meaning | Useful for scheduling decisions |
+| Low Redundancy | Does not duplicate another variable |
+| No Leakage | Does not reveal the target value |
+| Seasonal Relevance | Useful for Spring, Summer, or Fall patterns |
+| Interpretability | Easy to explain to stakeholders |
+
+---
+
+# Summary for Non-Technical Stakeholders
+
+The model variables were selected by reviewing which course and scheduling characteristics are most connected to student enrollment.
+
+We used historical enrollment, course details, modality, campus, schedule timing, and prior-term performance to predict future demand.
+
+Variables that were too closely tied to final enrollment, such as available seats, were removed to avoid giving the model information it would not realistically have before registration is complete.
+
+---
+
+# Summary for Technical Users
+
+The feature selection process combined correlation analysis, target relationship review, leakage prevention, and domain-informed filtering.
+
+Numerical predictors were evaluated using a correlation matrix and target correlation plot. Highly redundant or leakage-prone variables, such as `AVAILSEATS`, were excluded. Final training columns were reviewed by season using the `models.items()` loop to confirm the exact feature set used in each seasonal model.
+
+---
+
+# Final Conclusion
+
+This methodology helped create a more reliable, explainable, and operationally useful forecasting model.
+
+The selected variables allow the model to estimate enrollment demand using realistic pre-registration information, while avoiding redundant or misleading inputs that could reduce model quality.
 # 🟦 PACE: Construct
 
 ## Final Enrollment Forecasting Model
