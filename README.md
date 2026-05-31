@@ -308,37 +308,12 @@ To make the forecasting model more transparent, we reviewed which variables were
 
 ---
 
-## Step 1 — Review Variables Used by Each Seasonal Model
-
-```python
-for season, (model, train_cols) in models.items():
-    print(f"\n{season} MODEL VARIABLES ({len(train_cols)})")
-    print(sorted(train_cols))
-```
-
-This code prints the variables used by each model, separated by season.
-
-Because Spring, Summer, and Fall have different enrollment behaviors, each seasonal model may use a slightly different set of variables.
-
-### Why this matters
-
-For non-technical users, this step helps answer:
-
-> “What information is the model using to make predictions?”
-
-For data users, this confirms:
-
-- which features were passed into training
-- whether each seasonal model uses the expected variables
-- whether irrelevant or redundant variables were removed
-
----
-
-# Step 2 — Identify Numerical Variables
+# Step 1 — Identify Numerical Variables
 
 ```python
 num_vars = train_df.select_dtypes(include=['number']).columns
 ```
+![Variables Print](model_variables.jpg)
 
 This code selects only numerical columns from the training dataset.
 
@@ -360,7 +335,7 @@ Categorical fields such as course, campus, modality, or meeting days are importa
 
 ---
 
-# Step 3 — Build a Correlation Matrix
+# Step 2 — Build a Correlation Matrix
 
 ```python
 corr_matrix = train_df[num_vars].corr()
@@ -378,7 +353,7 @@ Correlation values range from:
 
 ---
 
-# Step 4 — Visualize the Correlation Heatmap
+# Step 3 — Visualize the Correlation Heatmap
 
 ```python
 plt.figure(figsize=(14,10))
@@ -395,6 +370,7 @@ plt.title('Correlation Heatmap - Numerical Features')
 plt.tight_layout()
 plt.show()
 ```
+![Correlation Heatmap](correlation_plot.jpg)
 
 The heatmap helps visually identify relationships between numerical variables.
 
@@ -414,7 +390,7 @@ If `AVAILSEATS` is highly related to `SECTENROLL`, it may create redundancy beca
 
 ---
 
-# Step 5 — Measure Correlation with Enrollment
+# Step 4 — Measure Correlation with Enrollment
 
 ```python
 corr_target = (
@@ -435,7 +411,7 @@ SECTENROLL
 
 ---
 
-# Step 6 — Plot Correlation with Enrollment
+# Step 5 — Plot Correlation with Enrollment
 
 ```python
 plt.figure(figsize=(8,6))
@@ -447,6 +423,7 @@ plt.xlabel('Correlation')
 plt.tight_layout()
 plt.show()
 ```
+![Correlation Enrollment Plot](correlation_enrollment.jpg)
 
 This chart ranks numerical variables based on how strongly they relate to enrollment.
 
