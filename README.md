@@ -334,35 +334,7 @@ For data users, this confirms:
 
 ---
 
-## Step 2 — Convert Model Variables into a Table
-
-```python
-for season, (model, train_cols) in models.items():
-    vars_df = pd.DataFrame({
-        'Variable': train_cols
-    })
-    
-    print(f"\n{season}")
-    print(vars_df)
-```
-
-This code displays the model variables in a cleaner table format.
-
-### Purpose
-
-Instead of only printing a list of variables, the table makes it easier to document and review the final model inputs.
-
-This is especially helpful for:
-
-- project documentation
-- technical reports
-- README files
-- stakeholder explanations
-- model transparency
-
----
-
-# Step 3 — Identify Numerical Variables
+# Step 2 — Identify Numerical Variables
 
 ```python
 num_vars = train_df.select_dtypes(include=['number']).columns
@@ -388,7 +360,7 @@ Categorical fields such as course, campus, modality, or meeting days are importa
 
 ---
 
-# Step 4 — Build a Correlation Matrix
+# Step 3 — Build a Correlation Matrix
 
 ```python
 corr_matrix = train_df[num_vars].corr()
@@ -406,7 +378,7 @@ Correlation values range from:
 
 ---
 
-# Step 5 — Visualize the Correlation Heatmap
+# Step 4 — Visualize the Correlation Heatmap
 
 ```python
 plt.figure(figsize=(14,10))
@@ -442,7 +414,7 @@ If `AVAILSEATS` is highly related to `SECTENROLL`, it may create redundancy beca
 
 ---
 
-# Step 6 — Measure Correlation with Enrollment
+# Step 5 — Measure Correlation with Enrollment
 
 ```python
 corr_target = (
@@ -463,7 +435,7 @@ SECTENROLL
 
 ---
 
-# Step 7 — Plot Correlation with Enrollment
+# Step 6 — Plot Correlation with Enrollment
 
 ```python
 plt.figure(figsize=(8,6))
@@ -511,7 +483,7 @@ For example:
 | `TIME_BLOCK` | Morning, afternoon, and evening sections may attract different demand |
 | `MAXENROLL` | Course capacity often reflects expected demand |
 
-This ensured the model used variables that are meaningful to Registrar operations.
+This ensured the model used variables that are meaningful to Scheduling operations.
 
 ---
 
@@ -630,11 +602,12 @@ Numerical predictors were evaluated using a correlation matrix and target correl
 
 ---
 
-# Final Conclusion
+# Conclusion
 
 This methodology helped create a more reliable, explainable, and operationally useful forecasting model.
 
 The selected variables allow the model to estimate enrollment demand using realistic pre-registration information, while avoiding redundant or misleading inputs that could reduce model quality.
+
 # 🟦 PACE: Construct
 
 ## Final Enrollment Forecasting Model
