@@ -842,6 +842,8 @@ indicate stronger predictive performance.
 
 ## Interpretation of Results
 
+![Enrollment Forecast](forecast.jpg)
+
 | Season | R² Interpretation |
 |---|---|
 | Spring | Model explains ~74% of enrollment variation |
