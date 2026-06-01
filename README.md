@@ -988,6 +988,8 @@ One of the proposed operational outcomes of this project is the integration of f
 
 The forecasted enrollment amount can be added as a reference value during the rolling process for future terms, allowing scheduling teams and academic departments to review predicted demand before schedules are finalized.
 
+![Spring Results Sample](validation_results.jpg)
+
 This creates several operational advantages:
 
 - Improved visibility into expected section demand
